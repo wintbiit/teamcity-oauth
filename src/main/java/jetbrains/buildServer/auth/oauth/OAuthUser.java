@@ -45,7 +45,10 @@ public class OAuthUser {
         }
         String value = null;
         for (String key : keys) {
-            value = (String) userData.get(key);
+            Object val = userData.get(key);
+            if (val instanceof String) {
+                value = (String) val;
+            }
             if (value != null) {
                 break;
             }
