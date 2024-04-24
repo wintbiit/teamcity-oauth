@@ -1,6 +1,7 @@
 package jetbrains.buildServer.auth.oauth;
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -14,7 +15,7 @@ public class OAuthUser {
     private static final String[] IDS_LIST = new String[]{"login", "username", "id", "preferred_username"};
     private static final String[] NAMES_LIST = new String[]{"name", "display_name", "displayName"};
     private static final String[] EMAIL_LIST = new String[]{"email", "mail"};
-    private final String GROUPS_KEY = "groups";
+    private static final String GROUPS_KEY = "groups";
 
     private final String id;
     private final String name;
@@ -68,6 +69,17 @@ public class OAuthUser {
         int groupSize = groupsJsonArray.size();
         String[] groupsArray = new String[groupSize];
         for (int i = 0; i < groupSize; i++) {
+            Object g = groupsJsonArray.get(i);
+            if (g instanceof String) {
+                groupsArray[i] = (String) g;
+                continue;
+            }
+
+            if (g instanceof JSONObject) {
+                JSONObject group = (JSONObject) g;
+                groupsArray[i] = (String) group.get("name");
+                continue;
+            }
             groupsArray[i] = (String) groupsJsonArray.get(i);
         }
         return new HashSet(Arrays.asList(groupsArray));
